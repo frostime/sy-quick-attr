@@ -61,8 +61,8 @@
             }
             let template = json[key];
             for (let key2 in template) {
-                if (typeof template[key2] === "object" || Array.isArray(template[key2])) {
-                    showMessage(`${key}.${key2} 不符合规范`, 5000, "error");
+                if (typeof template[key2] !== "string") {
+                    showMessage(`${key}.${key2} 必须为字符串!`, 5000, "error");
                     return false;
                 }
             }

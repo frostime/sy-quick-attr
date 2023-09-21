@@ -23,6 +23,11 @@ const ATTR_TEMPLATE = "attr-template";
 const addBlockAttr = async (blockId: BlockId, template: object) => {
     let blockAttrs = await getBlockAttrs(blockId);
     console.info(blockAttrs);
+    for (let key in blockAttrs) {
+        if (!key.startsWith("custom-")) {
+            delete blockAttrs[key];
+        }
+    }
     for (let key in template) {
         blockAttrs[`custom-${key}`] = template[key];
     }
