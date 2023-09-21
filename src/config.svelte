@@ -3,7 +3,7 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-09-21 22:48:35
+ LastEditTime : 2023-09-21 23:09:08
  Description  : 
 -->
 <script lang="ts">
@@ -39,12 +39,33 @@
         let text = textarea.value;
         try {
             let json = JSON.parse(text);
-            dispatch("save", json);
+            if (checkJsonFormat(json)) {
+                dispatch("save", json);
+            }
         } catch (e) {
-            showMessage("JSON 格式错误", 5000, "error");
+            showMessage("JSON 语法错误", 5000, "error");
             console.error(e);
             return;
         }
+    }
+
+    const checkJsonFormat = (json: object): boolean => {
+        if (typeof json !== "object") {
+            showMessage("JSON 模板不符合规范", 5000, "error");
+            return false;
+        }
+        for (let key in json) {
+            if (typeof json[key] !== "object") {
+                showMessage(`${key} 模板不符合规范`, 5000, "error");
+                return false;
+            }
+            let obj = json[key];
+            if (obj?.name === undefined || obj?.value === undefined) {
+                showMessage(`${key} 模板不符合规范`, 5000, "error");
+                return false;
+            }
+        }
+        return true;
     }
 
 </script>

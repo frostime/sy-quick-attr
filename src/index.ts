@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-09-21 22:37:02
+ * @LastEditTime : 2023-09-21 23:08:19
  * @Description  : 
  */
 import {
@@ -15,7 +15,7 @@ import {
 } from "siyuan";
 import "@/index.scss";
 
-import { SettingUtils } from "./libs/setting-utils";
+import { getBlockAttrs, setBlockAttrs } from "./api";
 import Config from "./config.svelte";
 
 const ATTR_TEMPLATE = "attr-template";
@@ -24,6 +24,15 @@ interface IAttr {
     name: string;
     value: string;
 };
+
+const addBlockAttr = async (blockId: BlockId, attrs: IAttr[]) => {
+    let blockAttrs = await getBlockAttrs(blockId);
+    console.info(blockAttrs);
+    attrs.forEach((attr) => {
+        blockAttrs[`custom-${attr.name}`] = attr.value;
+    });
+    await setBlockAttrs(blockId, blockAttrs);
+}
 
 export default class PluginSample extends Plugin {
 
@@ -83,13 +92,18 @@ export default class PluginSample extends Plugin {
             let template = this.templates[key];
             submenus.push({
                 label: key,
-                click: () => {
+                click: async () => {
                     let attrs: IAttr[] = [];
                     if (Array.isArray(template)) {
                         attrs = template;
                     } else {
                         attrs.push(template);
                     }
+                    let promises: Promise<any>[] = [];
+                    ids.forEach((id) => {
+                        promises.push(addBlockAttr(id, attrs));
+                    });
+                    await Promise.all(promises);
                 }
             });
         }
