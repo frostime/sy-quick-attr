@@ -1,18 +1,18 @@
 {
-  "name": "plugin-sample-vite-svelte",
+  "name": "sy-quick-attr",
   "author": "frostime",
-  "url": "https://github.com/siyuan-note/plugin-sample-vite-svelte",
-  "version": "0.2.3",
+  "url": "https://github.com/siyuan-note/sy-quick-attr",
+  "version": "0.1.0",
   "minAppVersion": "2.10.3",
   "backends": ["all"],
   "frontends": ["all"],
   "displayName": {
-    "en_US": "Plugin sample with vite and svelte",
-    "zh_CN": "插件样例 vite + svelte 版"
+    "en_US": "Attribute Quick Add",
+    "zh_CN": "快速添加块属性"
   },
   "description": {
     "en_US": "SiYuan plugin sample with vite and svelte",
-    "zh_CN": "使用 vite 和 svelte 开发的思源插件样例"
+    "zh_CN": "快速为块添加预定义的属性"
   },
   "readme": {
     "en_US": "README.md",
