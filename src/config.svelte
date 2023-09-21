@@ -3,7 +3,7 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-09-21 23:09:08
+ LastEditTime : 2023-09-21 23:23:36
  Description  : 
 -->
 <script lang="ts">
@@ -59,10 +59,12 @@
                 showMessage(`${key} 模板不符合规范`, 5000, "error");
                 return false;
             }
-            let obj = json[key];
-            if (obj?.name === undefined || obj?.value === undefined) {
-                showMessage(`${key} 模板不符合规范`, 5000, "error");
-                return false;
+            let template = json[key];
+            for (let key2 in template) {
+                if (typeof template[key2] === "object" || Array.isArray(template[key2])) {
+                    showMessage(`${key}.${key2} 不符合规范`, 5000, "error");
+                    return false;
+                }
             }
         }
         return true;

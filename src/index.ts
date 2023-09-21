@@ -20,17 +20,12 @@ import Config from "./config.svelte";
 
 const ATTR_TEMPLATE = "attr-template";
 
-interface IAttr {
-    name: string;
-    value: string;
-};
-
-const addBlockAttr = async (blockId: BlockId, attrs: IAttr[]) => {
+const addBlockAttr = async (blockId: BlockId, template: object) => {
     let blockAttrs = await getBlockAttrs(blockId);
     console.info(blockAttrs);
-    attrs.forEach((attr) => {
-        blockAttrs[`custom-${attr.name}`] = attr.value;
-    });
+    for (let key in template) {
+        blockAttrs[`custom-${key}`] = template[key];
+    }
     await setBlockAttrs(blockId, blockAttrs);
 }
 
@@ -38,7 +33,7 @@ export default class PluginSample extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
 
-    private templates: {[key: string]: IAttr | IAttr[]} = {};
+    private templates: {[key: string]: any} = {};
 
     async onload() {
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
@@ -93,15 +88,9 @@ export default class PluginSample extends Plugin {
             submenus.push({
                 label: key,
                 click: async () => {
-                    let attrs: IAttr[] = [];
-                    if (Array.isArray(template)) {
-                        attrs = template;
-                    } else {
-                        attrs.push(template);
-                    }
                     let promises: Promise<any>[] = [];
                     ids.forEach((id) => {
-                        promises.push(addBlockAttr(id, attrs));
+                        promises.push(addBlockAttr(id, template));
                     });
                     await Promise.all(promises);
                 }
