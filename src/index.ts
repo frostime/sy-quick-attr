@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-09-21 23:08:19
+ * @LastEditTime : 2023-09-22 10:23:22
  * @Description  : 
  */
 import {
@@ -17,6 +17,7 @@ import "@/index.scss";
 
 import { getBlockAttrs, setBlockAttrs } from "./api";
 import Config from "./config.svelte";
+import { setI18n } from "./utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -34,6 +35,10 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
     await setBlockAttrs(blockId, blockAttrs);
 }
 
+const IconForm = `
+<symbol id="iconForm" viewBox="0 0 1024 1024"><path d="M80 128v752h848V128H80z m240 672H160v-144h160v144z m0-224H160v-144h160v144z m528 224H400v-144h448v144z m0-224H400v-144h448v144z m0-224H160v-144h688v144z" p-id="4869"></path></symbol>
+`;
+
 export default class PluginSample extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
@@ -41,6 +46,8 @@ export default class PluginSample extends Plugin {
     private templates: {[key: string]: any} = {};
 
     async onload() {
+        this.addIcons(IconForm);
+        setI18n(this.i18n);
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
     }
 
@@ -50,20 +57,18 @@ export default class PluginSample extends Plugin {
         if (data) {
             this.templates = data;
         }
-        console.debug(`frontend: ${getFrontend()}; backend: ${getBackend()}`);
     }
 
     async onunload() {
         this.saveData(ATTR_TEMPLATE, this.templates);
         this.eventBus.off("click-blockicon", this.blockIconEventBindThis);
-        console.debug("onunload");
     }
 
     openSetting(): void {
         let dialog = new Dialog({
-            title: "Hello World",
+            title: this.i18n.name,
             content: `<div id="AttrTemplates" class="b3-dialog__content"></div>`,
-            width: "720px",
+            width: "500px",
             height: "500px",
         });
         const config = new Config({
@@ -91,6 +96,7 @@ export default class PluginSample extends Plugin {
         for (const key in this.templates) {
             let template = this.templates[key];
             submenus.push({
+                icon: "#iconForm",
                 label: key,
                 click: async () => {
                     let promises: Promise<any>[] = [];
@@ -103,7 +109,7 @@ export default class PluginSample extends Plugin {
         }
         (detail.menu as Menu).addItem({
             type: "submenu",
-            label: "添加属性",
+            label: this.i18n.addattr,
             submenu: submenus
         });
     }

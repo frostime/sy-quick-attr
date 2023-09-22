@@ -2,7 +2,7 @@
   "name": "sy-quick-attr",
   "author": "frostime",
   "url": "https://github.com/siyuan-note/sy-quick-attr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "minAppVersion": "2.10.6",
   "backends": ["all"],
   "frontends": ["all"],

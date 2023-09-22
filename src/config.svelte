@@ -3,12 +3,13 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-09-21 23:23:36
+ LastEditTime : 2023-09-22 10:19:07
  Description  : 
 -->
 <script lang="ts">
     import { showMessage } from "siyuan";
     import { createEventDispatcher } from "svelte";
+    import { i18n } from "./utils";
 
     export let templates: any;
     let jsonstr = JSON.stringify(templates, null, 4);
@@ -43,7 +44,7 @@
                 dispatch("save", json);
             }
         } catch (e) {
-            showMessage("JSON 语法错误", 5000, "error");
+            showMessage(i18n.msg.jsongrammar, 5000, "error");
             console.error(e);
             return;
         }
@@ -51,18 +52,18 @@
 
     const checkJsonFormat = (json: object): boolean => {
         if (typeof json !== "object") {
-            showMessage("JSON 模板不符合规范", 5000, "error");
+            showMessage(i18n.msg.jsonstd, 5000, "error");
             return false;
         }
         for (let key in json) {
             if (typeof json[key] !== "object") {
-                showMessage(`${key} 模板不符合规范`, 5000, "error");
+                showMessage(`${key}: ${i18n.msg.jsonstd}`, 5000, "error");
                 return false;
             }
             let template = json[key];
             for (let key2 in template) {
                 if (typeof template[key2] !== "string") {
-                    showMessage(`${key}.${key2} 必须为字符串!`, 5000, "error");
+                    showMessage(`${key}.${key2}: ${i18n.msg.muststring}`, 5000, "error");
                     return false;
                 }
             }
@@ -82,10 +83,10 @@
         style="align-items: center;"
     >
         <div class="fn__flex-1">
-            <h4>预定义模板</h4>
+            <h4>{i18n.predefine.title}</h4>
         </div>
         <div class="b3-label__text" style="text-align: right;">
-            使用 JSON 定义的属性模板
+            {i18n.predefine.text}
         </div>
     </div>
     <div class="b3-label fn__flex-1" style="border-bottom: 1px solid var(--b3-border-color)">
@@ -99,9 +100,9 @@
     </div>
     <div class="b3-label fn__flex" style="">
         <div class="fn__flex-1"></div>
-        <button class="b3-button" on:click={onCancel}>取消</button>
+        <button class="b3-button" on:click={onCancel}>{i18n.save}</button>
         <span class="fn__space"/>
-        <button class="b3-button" on:click={onSave}>保存</button>
+        <button class="b3-button" on:click={onSave}>{i18n.cancel}</button>
     </div>
 </div>
 
