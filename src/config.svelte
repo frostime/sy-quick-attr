@@ -45,7 +45,7 @@
             }
         } catch (e) {
             showMessage(i18n.msg.jsongrammar, 5000, "error");
-            console.error(e);
+            // console.debug(e);
             return;
         }
     }
@@ -100,9 +100,9 @@
     </div>
     <div class="b3-label fn__flex" style="">
         <div class="fn__flex-1"></div>
-        <button class="b3-button" on:click={onCancel}>{i18n.save}</button>
+        <button class="b3-button" on:click={onCancel}>{i18n.cancel}</button>
         <span class="fn__space"/>
-        <button class="b3-button" on:click={onSave}>{i18n.cancel}</button>
+        <button class="b3-button" on:click={onSave}>{i18n.save}</button>
     </div>
 </div>
 

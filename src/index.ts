@@ -3,15 +3,13 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-09-22 10:23:22
+ * @LastEditTime : 2023-09-22 10:32:52
  * @Description  : 
  */
 import {
     Plugin,
     Menu,
-    Dialog,
-    getFrontend,
-    getBackend,
+    Dialog
 } from "siyuan";
 import "@/index.scss";
 
@@ -23,7 +21,7 @@ const ATTR_TEMPLATE = "attr-template";
 
 const addBlockAttr = async (blockId: BlockId, template: object) => {
     let blockAttrs = await getBlockAttrs(blockId);
-    console.info(blockAttrs);
+    console.info(`Add block attr: ${blockId}: ${template}`);
     for (let key in blockAttrs) {
         if (!key.startsWith("custom-")) {
             delete blockAttrs[key];
@@ -96,7 +94,6 @@ export default class PluginSample extends Plugin {
         for (const key in this.templates) {
             let template = this.templates[key];
             submenus.push({
-                icon: "#iconForm",
                 label: key,
                 click: async () => {
                     let promises: Promise<any>[] = [];
@@ -108,6 +105,7 @@ export default class PluginSample extends Plugin {
             });
         }
         (detail.menu as Menu).addItem({
+            icon: "iconForm",
             type: "submenu",
             label: this.i18n.addattr,
             submenu: submenus

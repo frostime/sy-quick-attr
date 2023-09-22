@@ -1,20 +1,19 @@
-快速添加块属性。
+Quickly add block attributes.
 
-在设置中通过配置 Json 定义的块属性模板。
+Configure block attribute templates defined in JSON in the settings.
 
 ```json
 {
-  "样例1": {
+  "Example1": {
     "attr1": "value",
     "attr2": "true"
   },
-  "样例2": {
+  "Example2": {
     "attr3": "value"
-  },
+  }
 }
 ```
 
-注意:
+Note:
 
-- 属性不能为中文
-- 属性的默认值只能为字符串
+- Default values for attributes can only be strings.
