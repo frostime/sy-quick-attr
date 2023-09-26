@@ -8,7 +8,8 @@
     "msg": {
         "jsongrammar": "JSON 语法错误",
         "jsonstd": "JSON 定义不符合要求",
-        "muststring": "属性值必须是字符串"
+        "muststring": "属性值必须是字符串",
+        "keyformat": "属性名称只能由字母数字横线等简单字符组成"
     },
     "save": "保存",
     "cancel": "取消"

@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-09-22 10:32:52
+ * @LastEditTime : 2023-09-26 20:36:18
  * @Description  : 
  */
 import {
@@ -40,6 +40,7 @@ const IconForm = `
 export default class PluginSample extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
+    private docIconEventBindThis = this.docIconEvent.bind(this);
 
     private templates: {[key: string]: any} = {};
 
@@ -47,6 +48,7 @@ export default class PluginSample extends Plugin {
         this.addIcons(IconForm);
         setI18n(this.i18n);
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
+        this.eventBus.on("click-editortitleicon", this.docIconEventBindThis);
     }
 
     async onLayoutReady() {
@@ -60,6 +62,7 @@ export default class PluginSample extends Plugin {
     async onunload() {
         this.saveData(ATTR_TEMPLATE, this.templates);
         this.eventBus.off("click-blockicon", this.blockIconEventBindThis);
+        this.eventBus.off("click-editortitleicon", this.docIconEventBindThis);
     }
 
     openSetting(): void {
@@ -85,11 +88,7 @@ export default class PluginSample extends Plugin {
         });
     }
 
-    private blockIconEvent({ detail }: any) {
-        const ids: string[] = [];
-        detail.blockElements.forEach((item: HTMLElement) => {
-            ids.push(item.getAttribute("data-node-id"));
-        });
+    private createSubMenus(ids: string[]) {
         let submenus = [];
         for (const key in this.templates) {
             let template = this.templates[key];
@@ -104,6 +103,26 @@ export default class PluginSample extends Plugin {
                 }
             });
         }
+        return submenus;
+    }
+
+    private blockIconEvent({ detail }: any) {
+        const ids: string[] = [];
+        detail.blockElements.forEach((item: HTMLElement) => {
+            ids.push(item.getAttribute("data-node-id"));
+        });
+        let submenus = this.createSubMenus(ids);
+        (detail.menu as Menu).addItem({
+            icon: "iconForm",
+            type: "submenu",
+            label: this.i18n.addattr,
+            submenu: submenus
+        });
+    }
+
+    private docIconEvent({ detail }: any) {
+        let docId: DocumentId = detail.data.id;
+        let submenus = this.createSubMenus([docId]);
         (detail.menu as Menu).addItem({
             icon: "iconForm",
             type: "submenu",

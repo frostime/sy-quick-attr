@@ -3,7 +3,7 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-09-22 10:19:07
+ LastEditTime : 2023-09-26 20:36:02
  Description  : 
 -->
 <script lang="ts">
@@ -55,6 +55,7 @@
             showMessage(i18n.msg.jsonstd, 5000, "error");
             return false;
         }
+        const validKey = /^[\w\-]+$/;
         for (let key in json) {
             if (typeof json[key] !== "object") {
                 showMessage(`${key}: ${i18n.msg.jsonstd}`, 5000, "error");
@@ -64,6 +65,10 @@
             for (let key2 in template) {
                 if (typeof template[key2] !== "string") {
                     showMessage(`${key}.${key2}: ${i18n.msg.muststring}`, 5000, "error");
+                    return false;
+                }
+                if (!validKey.test(key2)) {
+                    showMessage(`${key}.${key2}: ${i18n.msg.keyformat}`, 5000, "error");
                     return false;
                 }
             }

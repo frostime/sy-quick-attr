@@ -8,7 +8,8 @@
     "msg": {
         "jsongrammar": "Json grammar error",
         "jsonstd": "Unsupposed json template",
-        "muststring": "Attribute value must be string"
+        "muststring": "Attribute value must be string",
+        "keyformat": "is not a valid attribute name"
     },
     "save": "Save",
     "cancel": "Cancel"
