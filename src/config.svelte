@@ -3,13 +3,13 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-09-26 20:36:02
+ LastEditTime : 2023-10-22 12:44:03
  Description  : 
 -->
 <script lang="ts">
     import { showMessage } from "siyuan";
     import { createEventDispatcher } from "svelte";
-    import { i18n } from "./utils";
+    import { i18n, Name2Type } from "./utils";
 
     export let templates: any;
     let jsonstr = JSON.stringify(templates, null, 4);
@@ -51,16 +51,40 @@
     }
 
     const checkJsonFormat = (json: object): boolean => {
+        //1. Json 规则必须是一个对象
         if (typeof json !== "object") {
             showMessage(i18n.msg.jsonstd, 5000, "error");
             return false;
         }
         const validKey = /^[\w\-]+$/;
+        // 每一个 key 代表一个规则的名称代号
         for (let key in json) {
+
+            // -------------------- 特殊规则 --------------------
+            if (key.startsWith('@type/')) {
+                //特殊规则: 块属性过滤
+                if (Name2Type?.[key] === undefined) {
+                    //说明 key 不在合法的过滤规则里
+                    showMessage(`${key}: ${i18n.msg.invalidRule}`, 5000, "error");
+                    return false;
+                }
+                //递归地检查过滤规则内部的模板定义
+                let flag = checkJsonFormat(json[key]);
+                if (flag === false) {
+                    return false;
+                }
+                continue;
+            }
+            // ------------------------------------------------
+
+
+            //2. 每一个 json[key] 代表了一个规则集合，他必须是一个对象
             if (typeof json[key] !== "object") {
                 showMessage(`${key}: ${i18n.msg.jsonstd}`, 5000, "error");
                 return false;
             }
+
+            //3. 检查规则集合内部的每条规则，必须是一个 validKey: string 的键值对
             let template = json[key];
             for (let key2 in template) {
                 if (typeof template[key2] !== "string") {

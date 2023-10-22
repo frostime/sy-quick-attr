@@ -9,7 +9,8 @@
         "jsongrammar": "JSON 语法错误",
         "jsonstd": "JSON 定义不符合要求",
         "muststring": "属性值必须是字符串",
-        "keyformat": "属性名称只能由字母数字横线等简单字符组成"
+        "keyformat": "属性名称只能由字母数字横线等简单字符组成",
+        "invalidRule": "不是一个合法的过滤规则, 请认真研读说明文档"
     },
     "save": "保存",
     "cancel": "取消"
