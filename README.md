@@ -1,5 +1,7 @@
 Quickly add block attributes.
 
+### Basic Usage
+
 Configure block attribute templates defined in JSON in the settings. For example, if you configure the following JSON in the settings:
 
 
@@ -24,4 +26,36 @@ Note:
 
   For example, you should write "true" instead of true, and write "0" instead of 0.
 
+### Block Attribute Filtering
 
+The above usage will take effect on all blocks. If you only want it to apply to specific types of blocks, you can use the filtering syntax:
+
+```json
+{
+  "Example 1": {
+    "attr1": "value",
+    "attr2": "true"
+  },
+  "@type/d": {
+    "Example 2": {
+      "attr1": "value"
+    }
+  }
+}
+```
+
+As shown above, the template defined under `@type/d` will only appear in the menu of document blocks. The supported block types are as follows:
+
+| prompt | Block Type |
+| -------- | ---------- |
+| `@type/d`       | Document Block |
+| `@type/h`       | Heading Block |
+| `@type/p`    | Paragraph Block |
+| `@type/l`       | List Block |
+| `@type/li`       | List Item Block |
+| `@type/q`    | Quote Block |
+| `@type/c`       | Code Block |
+| `@type/t`       | Table Block |
+| `@type/s`       | Super Block |
+
+```

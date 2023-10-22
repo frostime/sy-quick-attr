@@ -9,7 +9,8 @@
         "jsongrammar": "Json grammar error",
         "jsonstd": "Unsupposed json template",
         "muststring": "Attribute value must be string",
-        "keyformat": "is not a valid attribute name"
+        "keyformat": "is not a valid attribute name",
+        "invalidRule": "invalid filtering rule name, see doc please"
     },
     "save": "Save",
     "cancel": "Cancel"
