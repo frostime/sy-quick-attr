@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-09-26 20:36:18
+ * @LastEditTime : 2023-10-22 16:14:35
  * @Description  : 
  */
 import {
@@ -15,7 +15,7 @@ import "@/index.scss";
 
 import { getBlockAttrs, setBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n } from "./utils";
+import { setI18n, Type2Name } from "./utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -88,9 +88,12 @@ export default class PluginSample extends Plugin {
         });
     }
 
-    private createSubMenus(ids: string[]) {
+    private createGlobalSubMenus(ids: string[]) {
         let submenus = [];
         for (const key in this.templates) {
+            if (key.startsWith('@type/')) {
+                continue;
+            }
             let template = this.templates[key];
             submenus.push({
                 label: key,
@@ -106,12 +109,48 @@ export default class PluginSample extends Plugin {
         return submenus;
     }
 
+    private createSpecificSubMenus(id: BlockId, dataType: string) {
+        let submenus = [];
+        for (const key in this.templates) {
+            if (key.startsWith('@type/')) {
+                continue;
+            }
+            let template = this.templates[key];
+            submenus.push({
+                label: key,
+                click: async () => {
+                    await addBlockAttr(id, template);
+                }
+            });
+        }
+        let typeName = Type2Name?.[dataType];
+        let typeSpecifiedTemplate = this.templates?.[typeName];
+        if (typeSpecifiedTemplate !== undefined) {
+            for (const key in typeSpecifiedTemplate) {
+                let template = typeSpecifiedTemplate[key];
+                submenus.push({
+                    label: key,
+                    click: async () => {
+                        await addBlockAttr(id, template);
+                    }
+                });
+            }
+        }
+        return submenus;
+    }
+
     private blockIconEvent({ detail }: any) {
+        // console.debug(detail);
         const ids: string[] = [];
         detail.blockElements.forEach((item: HTMLElement) => {
             ids.push(item.getAttribute("data-node-id"));
         });
-        let submenus = this.createSubMenus(ids);
+        let submenus = [];
+        if (ids.length > 1) {
+            submenus = this.createGlobalSubMenus(ids);
+        } else {
+            submenus = this.createSpecificSubMenus(ids[0], detail.blockElements[0].getAttribute('data-type'));
+        }
         (detail.menu as Menu).addItem({
             icon: "iconForm",
             type: "submenu",
@@ -121,8 +160,9 @@ export default class PluginSample extends Plugin {
     }
 
     private docIconEvent({ detail }: any) {
+        // console.debug(detail);
         let docId: DocumentId = detail.data.id;
-        let submenus = this.createSubMenus([docId]);
+        let submenus = this.createSpecificSubMenus(docId, 'NodeDocument');
         (detail.menu as Menu).addItem({
             icon: "iconForm",
             type: "submenu",

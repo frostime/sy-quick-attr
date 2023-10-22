@@ -7,7 +7,7 @@ export const setI18n = (i18nObj: any) => {
 }
 
 export const Name2Type = {
-    "@type/d": "",
+    "@type/d": "NodeDocument",
     "@type/h": "NodeHeading",
     "@type/p": "NodeParagraph",
     "@type/l": "NodeList",
@@ -19,6 +19,7 @@ export const Name2Type = {
   };
 
 export const Type2Name = {
+    "NodeDocument": "@type/d",
     "NodeHeading": "@type/h",
     "NodeParagraph": "@type/p",
     "NodeList": "@type/l",
