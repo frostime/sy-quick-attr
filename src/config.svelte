@@ -3,7 +3,7 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-10-22 12:44:03
+ LastEditTime : 2023-12-12 11:11:11
  Description  : 
 -->
 <script lang="ts">
@@ -56,11 +56,11 @@
             showMessage(i18n.msg.jsonstd, 5000, "error");
             return false;
         }
-        const validKey = /^[\w\-]+$/;
+        const validKey = /^@?[\w\-]+$/; //允许一个可选的 @ 前缀
         // 每一个 key 代表一个规则的名称代号
         for (let key in json) {
 
-            // -------------------- 特殊规则 --------------------
+            // -------------------- 类型过滤规则 --------------------
             if (key.startsWith('@type/')) {
                 //特殊规则: 块属性过滤
                 if (Name2Type?.[key] === undefined) {

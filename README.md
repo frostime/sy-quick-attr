@@ -26,6 +26,35 @@ Note:
 
   For example, you should write "true" instead of true, and write "0" instead of 0.
 
+
+### Setting built-in attributes
+
+Normal user defined attributes will be set to custom attributes, e.g. `attr` will be set to `custom-attr`.
+
+If you don't want attributes to be prefixed with `custom-`, as is the case with some built-in attributes, you can prefix the attribute name with the `@` symbol, for example: `@name`: Sets the name of the block to be named.
+
+- `@name`: sets the block name
+- `@alias`: sets the block alias.
+- `@memo`: sets the block memo.
+- `@bookmark`: set the bookmark of the block
+- `@style`: sets the inline style of the block.
+
+For example:
+
+```json
+
+{
+  "Test block attr": {
+    "@name": "test",
+    "@alias": "Alias",
+    "@memo": "Memo",
+    "@bookmark": "Test",
+    "@style": "font-size: 1.5em; background-color: red;"
+  }
+}
+```
+
+
 ### Block Attribute Filtering
 
 The above usage will take effect on all blocks. If you only want it to apply to specific types of blocks, you can use the filtering syntax:

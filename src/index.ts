@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-10-22 16:14:35
+ * @LastEditTime : 2023-12-12 11:03:49
  * @Description  : 
  */
 import {
@@ -13,22 +13,24 @@ import {
 } from "siyuan";
 import "@/index.scss";
 
-import { getBlockAttrs, setBlockAttrs } from "./api";
+import { setBlockAttrs } from "./api";
 import Config from "./config.svelte";
 import { setI18n, Type2Name } from "./utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
-const addBlockAttr = async (blockId: BlockId, template: object) => {
-    let blockAttrs = await getBlockAttrs(blockId);
-    console.info(`Add block attr: ${blockId}: ${template}`);
-    for (let key in blockAttrs) {
-        if (!key.startsWith("custom-")) {
-            delete blockAttrs[key];
-        }
+const ParseKeyName = (key: string) => {
+    if (key.startsWith('@')) {
+        return key.substring(1);
     }
+    return `custom-${key}`;
+}
+
+const addBlockAttr = async (blockId: BlockId, template: object) => {
+    console.info(`Add block attr: ${blockId}: ${template}`);
+    let blockAttrs = {};
     for (let key in template) {
-        blockAttrs[`custom-${key}`] = template[key];
+        blockAttrs[ParseKeyName(key)] = template[key];
     }
     await setBlockAttrs(blockId, blockAttrs);
 }
