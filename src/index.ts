@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2023-12-12 11:03:49
+ * @LastEditTime : 2024-01-24 20:59:58
  * @Description  : 
  */
 import {
@@ -71,8 +71,8 @@ export default class PluginSample extends Plugin {
         let dialog = new Dialog({
             title: this.i18n.name,
             content: `<div id="AttrTemplates" class="b3-dialog__content"></div>`,
-            width: "500px",
-            height: "500px",
+            width: "600px",
+            height: "700px",
         });
         const config = new Config({
             target: dialog.element.querySelector("#AttrTemplates"),

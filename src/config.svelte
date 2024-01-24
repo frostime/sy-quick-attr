@@ -3,7 +3,7 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2023-12-12 11:11:11
+ LastEditTime : 2024-01-24 20:59:20
  Description  : 
 -->
 <script lang="ts">
@@ -102,9 +102,8 @@
 
 </script>
 
-<div
-    class="config__tab-container"
-    style="display: flex; flex-direction: column;"
+<section
+    style="display: flex; flex-direction: column; height: 100%;"
 >
     <div
         data-type="Header"
@@ -118,10 +117,9 @@
             {i18n.predefine.text}
         </div>
     </div>
-    <div class="b3-label fn__flex-1" style="border-bottom: 1px solid var(--b3-border-color)">
+    <div class="b3-label fn__flex-1">
         <textarea
             class="b3-text-field fn__block"
-            style="height: 100%"
             value={jsonstr}
             bind:this={textarea}
             on:keydown={onInput}
@@ -133,12 +131,14 @@
         <span class="fn__space"/>
         <button class="b3-button" on:click={onSave}>{i18n.save}</button>
     </div>
-</div>
+</section>
 
 <style lang="scss">
     textarea {
         //render space
         font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
             Courier, monospace;
+        // min-height: 17rem;
+        height: 100%
     }
 </style>

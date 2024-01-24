@@ -2,8 +2,8 @@
   "name": "sy-quick-attr",
   "author": "frostime",
   "url": "https://github.com/frostime/sy-quick-attr",
-  "version": "0.5.0",
-  "minAppVersion": "2.10.6",
+  "version": "0.6.0",
+  "minAppVersion": "2.12.1",
   "backends": ["all"],
   "frontends": ["all"],
   "displayName": {
