@@ -54,28 +54,6 @@ For example:
 }
 ```
 
-### `/` Command
-
-By setting the `@slash` attribute, you can quickly add corresponding attributes to the block being edited by entering the `/` command in the editor.
-
-Example:
-
-```json
-{
-  "TODO": {
-    "@slash": "todo",
-    "todo-status": "TODO"
-  },
-  "DONE": {
-    "@slash": "done",
-    "todo-status": "DONE"
-  }
-}
-```
-
-So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.
-
-
 ### Block Attribute Filtering
 
 The above usage will take effect on all blocks. If you only want it to apply to specific types of blocks, you can use the filtering syntax:
@@ -96,6 +74,7 @@ The above usage will take effect on all blocks. If you only want it to apply to 
 
 As shown above, the template defined under `@type/d` will only appear in the menu of document blocks. The supported block types are as follows:
 
+
 | prompt | Block Type |
 | -------- | ---------- |
 | `@type/d`       | Document Block |
@@ -108,4 +87,25 @@ As shown above, the template defined under `@type/d` will only appear in the men
 | `@type/t`       | Table Block |
 | `@type/s`       | Super Block |
 
+
+
+### `/` Command
+
+By setting the `@slash` attribute, you can quickly add corresponding attributes to the block being edited by entering the `/` command in the editor.
+
+Example:
+
+```json
+{
+  "TODO": {
+    "@slash": "todo",
+    "todo-status": "TODO"
+  },
+  "DONE": {
+    "@slash": "done",
+    "todo-status": "DONE"
+  }
+}
 ```
+
+So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.

@@ -50,27 +50,6 @@
 }
 ```
 
-### `/` 命令
-
-设置 `@slash` 属性，则可以在编辑器中通过输入 `/` 命令快速为正在编辑中的块添加相应的属性。
-
-样例:
-
-```json
-{
-  "TODO": {
-    "@slash": "todo",
-    "todo-status": "TODO"
-  },
-  "DONE": {
-    "@slash": "done",
-    "todo-status": "DONE"
-  }
-}
-```
-
-则在编辑器中输入 `/todo`，就会为块快速添加 `custom-todo-status=TODO` 的属性。
-
 ### 块属性过滤
 
 以上的用法会对所有块生效，如果只希望对特定类型的块生效，可以使用过滤语法:
@@ -102,3 +81,25 @@
 | `@type/c`       | 代码块   |
 | `@type/t`       | 表格块   |
 | `@type/s`       | 超级块   |
+
+
+### `/` 命令
+
+设置 `@slash` 属性，则可以在编辑器中通过输入 `/` 命令快速为正在编辑中的块添加相应的属性。
+
+样例:
+
+```json
+{
+  "TODO": {
+    "@slash": "todo",
+    "todo-status": "TODO"
+  },
+  "DONE": {
+    "@slash": "done",
+    "todo-status": "DONE"
+  }
+}
+```
+
+则在编辑器中输入 `/todo`，就会为块快速添加 `custom-todo-status=TODO` 的属性。
