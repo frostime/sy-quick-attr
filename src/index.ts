@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-01-24 20:59:58
+ * @LastEditTime : 2024-04-02 20:15:57
  * @Description  : 
  */
 import {
@@ -39,7 +39,7 @@ const IconForm = `
 <symbol id="iconForm" viewBox="0 0 1024 1024"><path d="M80 128v752h848V128H80z m240 672H160v-144h160v144z m0-224H160v-144h160v144z m528 224H400v-144h448v144z m0-224H400v-144h448v144z m0-224H160v-144h688v144z" p-id="4869"></path></symbol>
 `;
 
-export default class PluginSample extends Plugin {
+export default class PluginQuickAttr extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     private docIconEventBindThis = this.docIconEvent.bind(this);

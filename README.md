@@ -54,6 +54,27 @@ For example:
 }
 ```
 
+### `/` Command
+
+By setting the `@slash` attribute, you can quickly add corresponding attributes to the block being edited by entering the `/` command in the editor.
+
+Example:
+
+```json
+{
+  "TODO": {
+    "@slash": "todo",
+    "todo-status": "TODO"
+  },
+  "DONE": {
+    "@slash": "done",
+    "todo-status": "DONE"
+  }
+}
+```
+
+So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.
+
 
 ### Block Attribute Filtering
 
