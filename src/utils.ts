@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2024 by frostime. All Rights Reserved.
+ * @Author       : frostime
+ * @Date         : 2023-10-22 16:18:26
+ * @FilePath     : /src/utils.ts
+ * @LastEditTime : 2024-04-06 22:31:58
+ * @Description  : 
+ */
 import I18N from "./i18n/zh_CN.json";
 
 export let i18n: typeof I18N;
@@ -28,4 +36,29 @@ export const Type2Name = {
     "NodeCodeBlock": "@type/c",
     "NodeTable": "@type/t",
     "NodeSuperBlock": "@type/s"
+};
+
+
+type IQueryClosetElement = {
+    [key: string]: (element: HTMLElement) => BlockId | null;
+}
+
+export const QueryClosetElement: IQueryClosetElement = {
+    default: (ele: HTMLElement): BlockId | null => {
+        //获取最近的 data-node-id
+        ele = ele.closest("[data-node-id]");
+        if (!ele) {
+            return null;
+        }
+        if (ele.classList.contains("p")) {
+            //如果是 p 元素，那么检查上方最近的 li 元素的第一个 p 子类元素是不是自己
+            let li = ele.closest('[data-node-id].li');
+            //选择 li 下的第一个 p 元素
+            let p1st = li?.querySelector("[data-node-id].p");
+            if (p1st && p1st.getAttribute("data-node-id") === ele.getAttribute("data-node-id")) {
+                ele = ele.parentElement;
+            }
+        }
+        return ele.getAttribute("data-node-id");
+    }
 };

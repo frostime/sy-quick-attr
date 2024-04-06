@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-06 21:27:05
+ * @LastEditTime : 2024-04-06 22:48:28
  * @Description  : 
  */
 import {
@@ -17,7 +17,7 @@ import "@/index.scss";
 
 import { setBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n, Type2Name } from "./utils";
+import { setI18n, Type2Name, QueryClosetElement } from "./utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -91,36 +91,49 @@ export default class PluginQuickAttr extends Plugin {
         console.debug('Parse protyle slash');
         //check unique @slash key
         let slashKeys = new Set<string>();
-        for (const key in templates) {
-            let template = templates[key];
-            if (template["@slash"]) {
-                if (slashKeys.has(template["@slash"])) {
-                    showMessage(`@slash: "${template["@slash"]}" is not unique`, 5000, 'error');
-                    return false;
-                }
-                slashKeys.add(template["@slash"]);
-                slash.push({
-                    filter: [template["@slash"]],
-                    html: `Quick Attr | ${key}`,
-                    id: `quick-attr-${key}`,
-                    callback: async (protyle: Protyle) => {
-                        const selection = window.getSelection();
-                        const focusNode: Node = selection?.focusNode;
-                        if (!focusNode) {
-                            showMessage(`Failed, can't find focus node`, 5000, 'error');
-                            return;
-                        }
-                        let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ? focusNode.parentElement : focusNode as HTMLElement;
-                        const blockElement: HTMLElement = ele.closest("div[data-node-id]");
-                        if (!blockElement) {
+
+        const parseTemplateUnit = (key: string, template: Object, type: string = 'default') => {
+            if (template?.["@slash"] === undefined) {
+                return;
+            }
+            if (slashKeys.has(template["@slash"])) {
+                showMessage(`@slash: "${template["@slash"]}" is not unique`, 5000, 'error');
+                return false;
+            }
+            slashKeys.add(template["@slash"]);
+            slash.push({
+                filter: [template["@slash"]],
+                html: `Quick Attr | ${key}`,
+                id: `quick-attr-${key}`,
+                callback: async (protyle: Protyle) => {
+                    const selection = window.getSelection();
+                    const focusNode: Node = selection?.focusNode;
+                    if (!focusNode) {
+                        showMessage(`Failed, can't find focus node`, 5000, 'error');
+                        return;
+                    }
+                    let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ?
+                                            focusNode.parentElement : focusNode as HTMLElement;
+
+                    const Query = QueryClosetElement?.[type];
+                    if (Query) {
+                        const blockId = Query(ele);
+                        if (!blockId) {
                             showMessage(`Failed, can't find block`, 5000, 'error');
                             return;
                         }
-                        await addBlockAttr(blockElement.getAttribute('data-node-id'), template);
-                        //@ts-ignore; 注意，为了属性设置能够生效，必须把 protyle.insert 放到最后一步执行
-                        protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
+                        await addBlockAttr(blockId, template);
                     }
-                });
+                    //@ts-ignore; 注意，为了属性设置能够生效，必须把 protyle.insert 放到最后一步执行
+                    protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
+                }
+            });
+        }
+
+        for (const key in templates) {
+            let template = templates[key];
+            if (!key.startsWith('@type/')) {
+                parseTemplateUnit(key, template);
             }
         }
         this.protyleSlash = slash;
