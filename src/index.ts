@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-02 21:03:33
+ * @LastEditTime : 2024-04-06 21:27:05
  * @Description  : 
  */
 import {
@@ -29,7 +29,7 @@ const ParseKeyName = (key: string) => {
 }
 
 const addBlockAttr = async (blockId: BlockId, template: object) => {
-    console.info(`Add block attr: ${blockId}: ${template}`);
+    console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
     let blockAttrs = {};
     for (let key in template) {
         if (key === '@slash') continue;
@@ -37,6 +37,11 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
     }
     await setBlockAttrs(blockId, blockAttrs);
 }
+
+// const AddBlockAttrEvent = async (e: CustomEvent) => {
+//     const { id, attr } = e.detail;
+//     await addBlockAttr(id, attr);
+// }
 
 const IconForm = `
 <symbol id="iconForm" viewBox="0 0 1024 1024"><path d="M80 128v752h848V128H80z m240 672H160v-144h160v144z m0-224H160v-144h160v144z m528 224H400v-144h448v144z m0-224H400v-144h448v144z m0-224H160v-144h688v144z" p-id="4869"></path></symbol>
@@ -54,6 +59,8 @@ export default class PluginQuickAttr extends Plugin {
         setI18n(this.i18n);
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
         this.eventBus.on("click-editortitleicon", this.docIconEventBindThis);
+        //@ts-ignore
+        // this.eventBus.on("add-block-attr", AddBlockAttrEvent);
     }
 
     async onLayoutReady() {
@@ -69,6 +76,8 @@ export default class PluginQuickAttr extends Plugin {
         this.saveData(ATTR_TEMPLATE, this.templates);
         this.eventBus.off("click-blockicon", this.blockIconEventBindThis);
         this.eventBus.off("click-editortitleicon", this.docIconEventBindThis);
+        //@ts-ignore
+        // this.eventBus.off("add-block-attr", AddBlockAttrEvent);
     }
 
     /**
@@ -94,12 +103,22 @@ export default class PluginQuickAttr extends Plugin {
                     filter: [template["@slash"]],
                     html: `Quick Attr | ${key}`,
                     id: `quick-attr-${key}`,
-                    callback: (protyle: Protyle) => {
-                        const id: BlockId = protyle.protyle.breadcrumb.id;
-                        //插入特殊字符清除 slash
-                        //@ts-ignore
-                        protyle.insert(window.Lute.Caret, false, false);
-                        addBlockAttr(id, template);
+                    callback: async (protyle: Protyle) => {
+                        const selection = window.getSelection();
+                        const focusNode: Node = selection?.focusNode;
+                        if (!focusNode) {
+                            showMessage(`Failed, can't find focus node`, 5000, 'error');
+                            return;
+                        }
+                        let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ? focusNode.parentElement : focusNode as HTMLElement;
+                        const blockElement: HTMLElement = ele.closest("div[data-node-id]");
+                        if (!blockElement) {
+                            showMessage(`Failed, can't find block`, 5000, 'error');
+                            return;
+                        }
+                        await addBlockAttr(blockElement.getAttribute('data-node-id'), template);
+                        //@ts-ignore; 注意，为了属性设置能够生效，必须把 protyle.insert 放到最后一步执行
+                        protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                     }
                 });
             }
