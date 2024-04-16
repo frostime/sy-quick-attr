@@ -2,7 +2,12 @@ Quickly add block attributes.
 
 ### Basic Usage
 
-Configure block attribute templates defined in JSON in the settings. For example, if you configure the following JSON in the settings:
+- Configure block attribute templates defined in JSON in the settings.
+- Textarea supports auto-indentation, using tab to indent and shift+tab to unindent.
+
+#### Attribute Template Configuration
+
+For example, if you configure the following JSON in the settings:
 
 
 ```json

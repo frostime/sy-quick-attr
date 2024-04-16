@@ -3,13 +3,14 @@
  Author       : Yp Z
  Date         : 2023-09-21 22:18:27
  FilePath     : /src/config.svelte
- LastEditTime : 2024-01-24 20:59:20
+ LastEditTime : 2024-04-16 14:54:27
  Description  : 
 -->
 <script lang="ts">
     import { showMessage } from "siyuan";
     import { createEventDispatcher } from "svelte";
-    import { i18n, Name2Type } from "./utils";
+    import { i18n, Name2Type } from "@/libs/utils";
+    import { tabToIndentListener } from '@/libs/indent-textarea';
 
     export let templates: any;
     let jsonstr = JSON.stringify(templates, null, 4);
@@ -17,20 +18,6 @@
     let textarea: HTMLTextAreaElement;
 
     const dispatch = createEventDispatcher();
-
-    const onInput = (e: any) => {
-        //tab
-        if (e.keyCode === 9) {
-            e.preventDefault();
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const target = e.target as HTMLTextAreaElement;
-            const value = target.value;
-            target.value =
-                value.substring(0, start) + "    " + value.substring(end);
-            textarea.selectionStart = textarea.selectionEnd = start + 4;
-        }
-    }
 
     const onCancel = () => {
         dispatch("cancel");
@@ -122,7 +109,7 @@
             class="b3-text-field fn__block"
             value={jsonstr}
             bind:this={textarea}
-            on:keydown={onInput}
+            on:keydown={tabToIndentListener}
         />
     </div>
     <div class="b3-label fn__flex" style="">
@@ -136,8 +123,7 @@
 <style lang="scss">
     textarea {
         //render space
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
-            Courier, monospace;
+        font-family: var(--b3-font-family-code), "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
         // min-height: 17rem;
         height: 100%
     }
