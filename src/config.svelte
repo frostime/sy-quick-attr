@@ -123,7 +123,7 @@
 <style lang="scss">
     textarea {
         //render space
-        font-family: var(--b3-font-family-code), "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        font-family: var(--b3-font-family-code), "Microsoft YaHei", monospace;
         // min-height: 17rem;
         height: 100%
     }
