@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-06 22:48:28
+ * @LastEditTime : 2024-04-12 22:46:42
  * @Description  : 
  */
 import {
@@ -15,7 +15,7 @@ import {
 } from "siyuan";
 import "@/index.scss";
 
-import { setBlockAttrs } from "./api";
+import { setBlockAttrs, getBlockAttrs } from "./api";
 import Config from "./config.svelte";
 import { setI18n, Type2Name, QueryClosetElement } from "./libs/utils";
 
@@ -28,20 +28,37 @@ const ParseKeyName = (key: string) => {
     return `custom-${key}`;
 }
 
+const getUserDefinedAttrs = async (blockId: BlockId, attrs: Set<string>) => {
+    //首先获取已经存在的属性, 用于让用户修改
+    let blockAttrs = await getBlockAttrs(blockId);
+    let existAttrValues = {};
+    for (let key in blockAttrs) {
+        if (attrs.has(key)) {
+            existAttrValues[key] = blockAttrs[key];
+        }
+    }
+}
+
 const addBlockAttr = async (blockId: BlockId, template: object) => {
     console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
     let blockAttrs = {};
+    let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
     for (let key in template) {
         if (key === '@slash') continue;
-        blockAttrs[ParseKeyName(key)] = template[key];
+        if (template[key].startsWith('@value')) {
+            userDefinedAttrs.add(key);
+        } else {
+            blockAttrs[ParseKeyName(key)] = template[key];
+        }
     }
+
+    if (userDefinedAttrs.size > 0) {
+        
+    }
+
     await setBlockAttrs(blockId, blockAttrs);
 }
 
-// const AddBlockAttrEvent = async (e: CustomEvent) => {
-//     const { id, attr } = e.detail;
-//     await addBlockAttr(id, attr);
-// }
 
 const IconForm = `
 <symbol id="iconForm" viewBox="0 0 1024 1024"><path d="M80 128v752h848V128H80z m240 672H160v-144h160v144z m0-224H160v-144h160v144z m528 224H400v-144h448v144z m0-224H400v-144h448v144z m0-224H160v-144h688v144z" p-id="4869"></path></symbol>
@@ -52,7 +69,7 @@ export default class PluginQuickAttr extends Plugin {
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     private docIconEventBindThis = this.docIconEvent.bind(this);
 
-    private templates: {[key: string]: any} = {};
+    private templates: { [key: string]: any } = {};
 
     async onload() {
         this.addIcons(IconForm);
@@ -113,7 +130,7 @@ export default class PluginQuickAttr extends Plugin {
                         return;
                     }
                     let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ?
-                                            focusNode.parentElement : focusNode as HTMLElement;
+                        focusNode.parentElement : focusNode as HTMLElement;
 
                     const Query = QueryClosetElement?.[type];
                     if (Query) {
