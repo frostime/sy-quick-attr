@@ -17,7 +17,7 @@ import "@/index.scss";
 
 import { setBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n, Type2Name, QueryClosetElement } from "./utils";
+import { setI18n, Type2Name, QueryClosetElement } from "./libs/utils";
 
 const ATTR_TEMPLATE = "attr-template";
 

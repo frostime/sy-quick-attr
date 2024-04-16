@@ -2,11 +2,11 @@
  * Copyright (c) 2024 by frostime. All Rights Reserved.
  * @Author       : frostime
  * @Date         : 2023-10-22 16:18:26
- * @FilePath     : /src/utils.ts
- * @LastEditTime : 2024-04-06 22:31:58
+ * @FilePath     : /src/libs/utils.ts
+ * @LastEditTime : 2024-04-16 14:45:01
  * @Description  : 
  */
-import I18N from "./i18n/zh_CN.json";
+import I18N from "@/i18n/zh_CN.json";
 
 export let i18n: typeof I18N;
 
