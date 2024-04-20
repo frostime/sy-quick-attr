@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-20 19:16:12
+ * @LastEditTime : 2024-04-20 19:35:01
  * @Description  : 
  */
 import {
@@ -46,7 +46,14 @@ const buildInputDom = (attrs: {}, ...keys: string[]) => {
     </div>`;
 }
 
-const addBlockAttr = async (blockId: BlockId, template: object) => {
+/**
+ * 为指定的块添加属性
+ * @param blockId 
+ * @param template 
+ * @param clearCb 执行 protyle 清理的回调函数; 仅仅在使用 /slash 命令的情况下调用
+ * @returns 
+ */
+const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Function) => {
     console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
 
 
@@ -75,6 +82,7 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
 
     //用户输入，覆盖默认属性
     if (userDefinedAttrs.size > 0) {
+        clearCb(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
         let attrs: {} | null = await new Promise((resolve) => {
             confirm(i18n.userDefineAttr, buildInputDom(existAttrs, ...userDefinedAttrs), (dialog: Dialog) => {
                 let inputs = dialog.element.querySelectorAll('input');
@@ -95,6 +103,8 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
         }
         blockAttrs = { ...blockAttrs, ...attrs };
 
+    } else {
+        clearCb();
     }
 
     await setBlockAttrs(blockId, blockAttrs);
@@ -180,10 +190,12 @@ export default class PluginQuickAttr extends Plugin {
                             showMessage(`Failed, can't find block`, 5000, 'error');
                             return;
                         }
-                        await addBlockAttr(blockId, template);
+                        await addBlockAttr(blockId, template, () => {
+                            protyle.insert(window.Lute.Caret, false, false);
+                        });
+                    } else {
+                        protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                     }
-                    //@ts-ignore; 注意，为了属性设置能够生效，必须把 protyle.insert 放到最后一步执行
-                    protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                 }
             });
         }
