@@ -114,3 +114,28 @@ Example:
 ```
 
 So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.
+
+
+### Using the `@value/input` Feature
+
+When we set a attribute's value to `@value/input`, we can input the attribute's value in a pop-up dialog box.
+
+Example:
+
+```json
+{
+  "Set Inline Style": {
+    "@style": "@value/input",
+    "set-style": "true", 
+    "hello": "@value/input",
+    "world": "@value/input"
+  }
+}
+```
+
+In this feature:
+
+- Automatically sets `custom-set-style=true`
+- `style`, `custom-hello`, `custom-world` will pop up a dialog box for you to enter values
+
+![](asset/value-input.png)
