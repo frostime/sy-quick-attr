@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-20 18:58:46
+ * @LastEditTime : 2024-04-20 19:16:12
  * @Description  : 
  */
 import {
@@ -29,24 +29,14 @@ const ParseKeyName = (key: string) => {
     return `custom-${key}`;
 }
 
-const getUserDefinedAttrs = async (blockId: BlockId, attrs: Set<string>) => {
-    //首先获取已经存在的属性, 用于让用户修改
-    let blockAttrs = await getBlockAttrs(blockId);
-    let existAttrValues = {};
-    for (let key in blockAttrs) {
-        if (attrs.has(key)) {
-            existAttrValues[key] = blockAttrs[key];
-        }
-    }
-}
-
-const buildInputDom = (...keys: string[]) => {
+const buildInputDom = (attrs: {}, ...keys: string[]) => {
     let items = [];
     keys.forEach((key) => {
+        const val = attrs?.[key] ?? '';
         let html = `
         <div class="input-item" style="display: flex; gap: 5px;">
             <label style="width: 100px; font-weight: bold;">${key}</label>
-            <input type="text" class="b3-text-field" data-key="${key}" style="flex: 1;"/>
+            <input type="text" class="b3-text-field" data-key="${key}" value="${val}" style="flex: 1;"/>
         </div>
         `;
         items.push(html);
@@ -58,6 +48,8 @@ const buildInputDom = (...keys: string[]) => {
 
 const addBlockAttr = async (blockId: BlockId, template: object) => {
     console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
+
+
     let blockAttrs = {};
     let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
     for (let key in template) {
@@ -68,10 +60,23 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
             blockAttrs[ParseKeyName(key)] = template[key];
         }
     }
+    //获取用户需要自行输入设置的属性中，是否已经存在对应的属性
+    let currentAttrs = await getBlockAttrs(blockId);
+    let existAttrs = {};
+    const UnParse = (key: string) => key.startsWith('custom-') ? key.substring(7) : `@${key}`;
+    for (let key in currentAttrs) {
+        if (key === 'id') continue; //id 属性不可修改
+        let val = currentAttrs[key];
+        key = UnParse(key); //去掉 custom- 前缀；将内置属性转换为 @key
+        if (userDefinedAttrs.has(key)) {
+            existAttrs[key] = val;
+        }
+    }
 
+    //用户输入，覆盖默认属性
     if (userDefinedAttrs.size > 0) {
         let attrs: {} | null = await new Promise((resolve) => {
-            confirm(i18n.userDefineAttr, buildInputDom(...userDefinedAttrs), (dialog: Dialog) => {
+            confirm(i18n.userDefineAttr, buildInputDom(existAttrs, ...userDefinedAttrs), (dialog: Dialog) => {
                 let inputs = dialog.element.querySelectorAll('input');
                 let attrs = {};
                 inputs.forEach((input: HTMLInputElement) => {
