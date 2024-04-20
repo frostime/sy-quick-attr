@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-06 22:48:28
+ * @LastEditTime : 2024-04-20 19:35:01
  * @Description  : 
  */
 import {
@@ -11,13 +11,14 @@ import {
     Menu,
     Dialog,
     Protyle,
-    showMessage
+    showMessage,
+    confirm
 } from "siyuan";
 import "@/index.scss";
 
-import { setBlockAttrs } from "./api";
+import { setBlockAttrs, getBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n, Type2Name, QueryClosetElement } from "./libs/utils";
+import { setI18n, Type2Name, QueryClosetElement, i18n } from "./libs/utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -28,20 +29,87 @@ const ParseKeyName = (key: string) => {
     return `custom-${key}`;
 }
 
-const addBlockAttr = async (blockId: BlockId, template: object) => {
+const buildInputDom = (attrs: {}, ...keys: string[]) => {
+    let items = [];
+    keys.forEach((key) => {
+        const val = attrs?.[key] ?? '';
+        let html = `
+        <div class="input-item" style="display: flex; gap: 5px;">
+            <label style="width: 100px; font-weight: bold;">${key}</label>
+            <input type="text" class="b3-text-field" data-key="${key}" value="${val}" style="flex: 1;"/>
+        </div>
+        `;
+        items.push(html);
+    });
+    return `<div style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+        ${items.join('\n')}
+    </div>`;
+}
+
+/**
+ * 为指定的块添加属性
+ * @param blockId 
+ * @param template 
+ * @param clearCb 执行 protyle 清理的回调函数; 仅仅在使用 /slash 命令的情况下调用
+ * @returns 
+ */
+const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Function) => {
     console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
+
+
     let blockAttrs = {};
+    let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
     for (let key in template) {
         if (key === '@slash') continue;
-        blockAttrs[ParseKeyName(key)] = template[key];
+        if (template[key].startsWith('@value')) {
+            userDefinedAttrs.add(key);
+        } else {
+            blockAttrs[ParseKeyName(key)] = template[key];
+        }
     }
+    //获取用户需要自行输入设置的属性中，是否已经存在对应的属性
+    let currentAttrs = await getBlockAttrs(blockId);
+    let existAttrs = {};
+    const UnParse = (key: string) => key.startsWith('custom-') ? key.substring(7) : `@${key}`;
+    for (let key in currentAttrs) {
+        if (key === 'id') continue; //id 属性不可修改
+        let val = currentAttrs[key];
+        key = UnParse(key); //去掉 custom- 前缀；将内置属性转换为 @key
+        if (userDefinedAttrs.has(key)) {
+            existAttrs[key] = val;
+        }
+    }
+
+    //用户输入，覆盖默认属性
+    if (userDefinedAttrs.size > 0) {
+        clearCb(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
+        let attrs: {} | null = await new Promise((resolve) => {
+            confirm(i18n.userDefineAttr, buildInputDom(existAttrs, ...userDefinedAttrs), (dialog: Dialog) => {
+                let inputs = dialog.element.querySelectorAll('input');
+                let attrs = {};
+                inputs.forEach((input: HTMLInputElement) => {
+                    let key = input.getAttribute('data-key');
+                    attrs[ParseKeyName(key)] = input.value;
+                });
+                dialog.destroy();
+                resolve(attrs);
+            }, () => {
+                resolve(null);
+            });
+        });
+
+        if (attrs === null) {
+            return;
+        }
+        blockAttrs = { ...blockAttrs, ...attrs };
+
+    } else {
+        clearCb();
+    }
+
     await setBlockAttrs(blockId, blockAttrs);
 }
 
-// const AddBlockAttrEvent = async (e: CustomEvent) => {
-//     const { id, attr } = e.detail;
-//     await addBlockAttr(id, attr);
-// }
 
 const IconForm = `
 <symbol id="iconForm" viewBox="0 0 1024 1024"><path d="M80 128v752h848V128H80z m240 672H160v-144h160v144z m0-224H160v-144h160v144z m528 224H400v-144h448v144z m0-224H400v-144h448v144z m0-224H160v-144h688v144z" p-id="4869"></path></symbol>
@@ -52,7 +120,7 @@ export default class PluginQuickAttr extends Plugin {
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     private docIconEventBindThis = this.docIconEvent.bind(this);
 
-    private templates: {[key: string]: any} = {};
+    private templates: { [key: string]: any } = {};
 
     async onload() {
         this.addIcons(IconForm);
@@ -113,7 +181,7 @@ export default class PluginQuickAttr extends Plugin {
                         return;
                     }
                     let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ?
-                                            focusNode.parentElement : focusNode as HTMLElement;
+                        focusNode.parentElement : focusNode as HTMLElement;
 
                     const Query = QueryClosetElement?.[type];
                     if (Query) {
@@ -122,10 +190,12 @@ export default class PluginQuickAttr extends Plugin {
                             showMessage(`Failed, can't find block`, 5000, 'error');
                             return;
                         }
-                        await addBlockAttr(blockId, template);
+                        await addBlockAttr(blockId, template, () => {
+                            protyle.insert(window.Lute.Caret, false, false);
+                        });
+                    } else {
+                        protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                     }
-                    //@ts-ignore; 注意，为了属性设置能够生效，必须把 protyle.insert 放到最后一步执行
-                    protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                 }
             });
         }

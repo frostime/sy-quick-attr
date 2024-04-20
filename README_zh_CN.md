@@ -108,3 +108,29 @@
 ```
 
 则在编辑器中输入 `/todo`，就会为块快速添加 `custom-todo-status=TODO` 的属性。
+
+
+### 使用 `@value/input` 功能
+
+当我们把属性的值设置为 `@value/input` 时，就可以一个弹出的对话框中输入属性的值。
+
+样例:
+
+```json
+{
+  "设置内联样式": {
+    "@style": "@value/input",
+    "set-style": "true",
+    "hello": "@value/input",
+    "world": "@value/input"
+  }
+}
+```
+
+这个功能当中：
+
+- 自动设置 `custom-set-style=true`
+- `style`, `custom-hello`, `custom-world` 会弹出对话框让你输入值
+
+
+![](asset/value-input.png)
