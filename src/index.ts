@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-12 22:46:42
+ * @LastEditTime : 2024-04-20 18:53:33
  * @Description  : 
  */
 import {
@@ -11,7 +11,8 @@ import {
     Menu,
     Dialog,
     Protyle,
-    showMessage
+    showMessage,
+    confirm
 } from "siyuan";
 import "@/index.scss";
 
@@ -39,6 +40,22 @@ const getUserDefinedAttrs = async (blockId: BlockId, attrs: Set<string>) => {
     }
 }
 
+const buildInputDom = (...keys: string[]) => {
+    let items = [];
+    keys.forEach((key) => {
+        let html = `
+        <div class="input-item" style="display: flex; gap: 5px;">
+            <label style="width: 100px; font-weight: bold;">${key}</label>
+            <input type="text" data-key="${key}" style="flex: 1;"/>
+        </div>
+        `;
+        items.push(html);
+    });
+    return `<div style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+        ${items.join('\n')}
+    </div>`;
+}
+
 const addBlockAttr = async (blockId: BlockId, template: object) => {
     console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
     let blockAttrs = {};
@@ -53,7 +70,26 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
     }
 
     if (userDefinedAttrs.size > 0) {
-        
+        let attrs: {} | null = await new Promise((resolve) => {
+            confirm('Add Block Attr', buildInputDom(...userDefinedAttrs), (dialog: Dialog) => {
+                let inputs = dialog.element.querySelectorAll('input');
+                let attrs = {};
+                inputs.forEach((input: HTMLInputElement) => {
+                    let key = input.getAttribute('data-key');
+                    attrs[ParseKeyName(key)] = input.value;
+                });
+                dialog.destroy();
+                resolve(attrs);
+            }, () => {
+                resolve(null);
+            });
+        });
+
+        if (attrs === null) {
+            return;
+        }
+        blockAttrs = { ...blockAttrs, ...attrs };
+
     }
 
     await setBlockAttrs(blockId, blockAttrs);
