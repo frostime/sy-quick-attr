@@ -12,6 +12,7 @@
         "keyformat": "is not a valid attribute name",
         "invalidRule": "invalid filtering rule name, see doc please"
     },
+    "userDefineAttr": "Please input the value of the attributes",
     "save": "Save",
     "cancel": "Cancel"
 }

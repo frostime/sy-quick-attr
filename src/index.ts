@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-20 18:53:33
+ * @LastEditTime : 2024-04-20 18:58:46
  * @Description  : 
  */
 import {
@@ -18,7 +18,7 @@ import "@/index.scss";
 
 import { setBlockAttrs, getBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n, Type2Name, QueryClosetElement } from "./libs/utils";
+import { setI18n, Type2Name, QueryClosetElement, i18n } from "./libs/utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -46,7 +46,7 @@ const buildInputDom = (...keys: string[]) => {
         let html = `
         <div class="input-item" style="display: flex; gap: 5px;">
             <label style="width: 100px; font-weight: bold;">${key}</label>
-            <input type="text" data-key="${key}" style="flex: 1;"/>
+            <input type="text" class="b3-text-field" data-key="${key}" style="flex: 1;"/>
         </div>
         `;
         items.push(html);
@@ -71,7 +71,7 @@ const addBlockAttr = async (blockId: BlockId, template: object) => {
 
     if (userDefinedAttrs.size > 0) {
         let attrs: {} | null = await new Promise((resolve) => {
-            confirm('Add Block Attr', buildInputDom(...userDefinedAttrs), (dialog: Dialog) => {
+            confirm(i18n.userDefineAttr, buildInputDom(...userDefinedAttrs), (dialog: Dialog) => {
                 let inputs = dialog.element.querySelectorAll('input');
                 let attrs = {};
                 inputs.forEach((input: HTMLInputElement) => {
