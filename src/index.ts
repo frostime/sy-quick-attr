@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-20 19:35:01
+ * @LastEditTime : 2024-04-22 09:31:23
  * @Description  : 
  */
 import {
@@ -54,8 +54,7 @@ const buildInputDom = (attrs: {}, ...keys: string[]) => {
  * @returns 
  */
 const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Function) => {
-    console.info(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
-
+    console.debug(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
 
     let blockAttrs = {};
     let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
@@ -82,7 +81,7 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
 
     //用户输入，覆盖默认属性
     if (userDefinedAttrs.size > 0) {
-        clearCb(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
+        clearCb?.(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
         let attrs: {} | null = await new Promise((resolve) => {
             confirm(i18n.userDefineAttr, buildInputDom(existAttrs, ...userDefinedAttrs), (dialog: Dialog) => {
                 let inputs = dialog.element.querySelectorAll('input');
@@ -104,7 +103,7 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
         blockAttrs = { ...blockAttrs, ...attrs };
 
     } else {
-        clearCb();
+        clearCb?.();
     }
 
     await setBlockAttrs(blockId, blockAttrs);
