@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-05-13 12:54:01
+ * @LastEditTime : 2024-05-13 13:25:22
  * @Description  : 
  */
 import {
@@ -58,14 +58,40 @@ const ensurePluginFormat = (key: string) => {
     return key;
 }
 
-const buildInputDom = (attrs: {}, ...keys: string[]) => {
+const buildInputDom = (attrs: {}, keys: string[], keyInputType: Map<string, string>) => {
     let items = [];
+
     keys.forEach((key) => {
         const val = attrs?.[key] ?? '';
+        let inputType = keyInputType.get(key) ?? 'input';
+        let ele: string;
+        if (inputType === 'input') {
+            ele = `<input type="text attr-value" class="b3-text-field" data-key="${key}" value="${val}" style="flex: 1;"/>`;
+        } else if (inputType.startsWith('select')) {
+            const pat = /select:(?:(.+)[,;]?)+/;
+            const textlist = [];
+            if (pat.test(inputType)) {
+                let match = inputType.match(pat);
+                let list = match[1].split(/[,;]/);
+                list.forEach((item) => {
+                    item = item.trim();
+                    let selected = item === val ? 'selected' : '';
+                    let option = `<option value="${item}" ${selected}>${item}</option>`
+                    textlist.push(option);
+                });
+                ele = `
+                <select class="b3-select attr-value" data-key="${key}" style="flex: 1;">
+                    ${textlist.join('\n')}
+                </select>
+                `;
+            }
+        } else {
+            return;
+        }
         let html = `
         <div class="input-item" style="display: flex; gap: 5px;">
             <label style="width: 100px; font-weight: bold;">${key}</label>
-            <input type="text" class="b3-text-field" data-key="${key}" value="${val}" style="flex: 1;"/>
+            ${ele}
         </div>
         `;
         items.push(html);
@@ -87,10 +113,13 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
 
     let blockAttrs = {};
     let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
+    let userDefinedAttrsInputType = new Map<string, string>(); //用户自定义属性的输入类型
     for (let key in template) {
         if (key === '@slash') continue;
         if (template[key].startsWith('@value')) {
             userDefinedAttrs.add(key);
+            let inputTyle = template[key].split('/')?.[1] ?? 'input';
+            userDefinedAttrsInputType.set(key, inputTyle);
         } else {
             blockAttrs[ParseKeyName(key)] = template[key];
         }
@@ -112,10 +141,10 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
     if (userDefinedAttrs.size > 0) {
         clearCb?.(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
         let attrs: {} | null = await new Promise((resolve) => {
-            confirm(i18n.userDefineAttr, buildInputDom(existAttrs, ...userDefinedAttrs), (dialog: Dialog) => {
-                let inputs = dialog.element.querySelectorAll('input');
+            confirm(i18n.userDefineAttr, buildInputDom(existAttrs, Array.from(userDefinedAttrs), userDefinedAttrsInputType), (dialog: Dialog) => {
+                let inputs = dialog.element.querySelectorAll('.attr-value');
                 let attrs = {};
-                inputs.forEach((input: HTMLInputElement) => {
+                inputs.forEach((input: HTMLInputElement | HTMLSelectElement) => {
                     let key = input.getAttribute('data-key');
                     attrs[ParseKeyName(key)] = input.value;
                 });
