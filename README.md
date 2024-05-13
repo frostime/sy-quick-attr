@@ -1,14 +1,13 @@
 Quickly add block attributes.
 
-### Basic Usage
+## Basic Usage
 
-- Configure block attribute templates defined in JSON in the settings.
-- Textarea supports auto-indentation, using tab to indent and shift+tab to unindent.
+* Configure block attribute templates defined in JSON in the settings.
+* Textarea supports auto-indentation, using tab to indent and shift+tab to unindent.
 
-#### Attribute Template Configuration
+### Attribute Template Configuration
 
 For example, if you configure the following JSON in the settings:
-
 
 ```json
 {
@@ -26,23 +25,22 @@ Then clicking on the block icon， it will display two menus: "Example 1" and "E
 
 Note:
 
-- Only english character, number, `-`, `_` are permitted as an attribute's name
-- The default value for attributes can only be a string.
+* Only english character, number, `-`, `_` are permitted as an attribute's name
+* The default value for attributes can only be a string.
 
   For example, you should write "true" instead of true, and write "0" instead of 0.
 
-
-### Setting built-in attributes
+## Setting built-in attributes
 
 Normal user defined attributes will be set to custom attributes, e.g. `attr` will be set to `custom-attr`.
 
 If you don't want attributes to be prefixed with `custom-`, as is the case with some built-in attributes, you can prefix the attribute name with the `@` symbol, for example: `@name`: Sets the name of the block to be named.
 
-- `@name`: sets the block name
-- `@alias`: sets the block alias.
-- `@memo`: sets the block memo.
-- `@bookmark`: set the bookmark of the block
-- `@style`: sets the inline style of the block.
+* `@name`: sets the block name
+* `@alias`: sets the block alias.
+* `@memo`: sets the block memo.
+* `@bookmark`: set the bookmark of the block
+* `@style`: sets the inline style of the block.
 
 For example:
 
@@ -59,7 +57,7 @@ For example:
 }
 ```
 
-### Block Attribute Filtering
+## Block Attribute Filtering
 
 The above usage will take effect on all blocks. If you only want it to apply to specific types of blocks, you can use the filtering syntax:
 
@@ -79,22 +77,19 @@ The above usage will take effect on all blocks. If you only want it to apply to 
 
 As shown above, the template defined under `@type/d` will only appear in the menu of document blocks. The supported block types are as follows:
 
-
-| prompt | Block Type |
-| -------- | ---------- |
-| `@type/d`       | Document Block |
-| `@type/h`       | Heading Block |
-| `@type/p`    | Paragraph Block |
-| `@type/l`       | List Block |
+| prompt | Block Type      |
+| -------- | ----------------- |
+| `@type/d`       | Document Block  |
+| `@type/h`       | Heading Block   |
+| `@type/p`       | Paragraph Block |
+| `@type/l`       | List Block      |
 | `@type/li`       | List Item Block |
-| `@type/q`    | Quote Block |
-| `@type/c`       | Code Block |
-| `@type/t`       | Table Block |
-| `@type/s`       | Super Block |
+| `@type/q`       | Quote Block     |
+| `@type/c`       | Code Block      |
+| `@type/t`       | Table Block     |
+| `@type/s`       | Super Block     |
 
-
-
-### `/` Command
+## `/` Command
 
 By setting the `@slash` attribute, you can quickly add corresponding attributes to the block being edited by entering the `/` command in the editor.
 
@@ -116,9 +111,13 @@ Example:
 So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.
 
 
-### Using the `@value/input` Feature
+## Using the `@value` Feature
 
-When we set a attribute's value to `@value/input`, we can input the attribute's value in a pop-up dialog box.
+When we set an attribute's value to `@value/xxx`, we can input the specified attribute's value in a pop-up dialog box.
+
+### `@value/input`
+
+An attribute declared with `@value/input` will create a text box to input its value.
 
 Example:
 
@@ -126,7 +125,7 @@ Example:
 {
   "Set Inline Style": {
     "@style": "@value/input",
-    "set-style": "true", 
+    "set-style": "true",
     "hello": "@value/input",
     "world": "@value/input"
   }
@@ -135,7 +134,26 @@ Example:
 
 In this feature:
 
-- Automatically sets `custom-set-style=true`
-- `style`, `custom-hello`, `custom-world` will pop up a dialog box for you to enter values
+* Automatically sets `custom-set-style=true`
+* `style`, `custom-hello`, `custom-world` will pop up a dialog box for you to enter values
 
 ![](asset/value-input.png)
+
+### `@value/select`
+
+An attribute declared with `@value/select` will create a dropdown select box to choose its value.
+
+The syntax is `@value/select:<val>`, with different options separated by `;` or `,`.
+
+Example:
+
+```json
+{
+  "Set Inline Style": {
+    "set-style": "@value/select:true;false"
+  }
+}
+```
+
+![](asset/value-select.png)
+
