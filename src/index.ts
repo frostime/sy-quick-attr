@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-04-22 09:31:23
+ * @LastEditTime : 2024-05-13 12:54:01
  * @Description  : 
  */
 import {
@@ -27,6 +27,35 @@ const ParseKeyName = (key: string) => {
         return key.substring(1);
     }
     return `custom-${key}`;
+}
+
+const coreKey = new Set(['id', 'name', 'alias', 'memo', 'bookmark', 'style']);
+//TODO Use this
+const ensureSyFormat = (key: string) => {
+    if (key.startsWith('custom-')) return key;
+    if (key.startsWith('@')) {
+        key = key.substring(1);
+        if (coreKey.has(key)) {
+            return key;
+        } else {
+            return null;
+        }
+    }
+    return `custom-${key}`;
+}
+const ensurePluginFormat = (key: string) => {
+    //查看是否为思源的属性格式
+    if (key.startsWith('custom-')) return key.substring(7);
+    //检查内置属性
+    if (key.startsWith('@')) {
+        key = key.substring(1);
+        if (coreKey.has(key)) {
+            return `@${key}`;
+        } else {
+            return null;
+        }
+    }
+    return key;
 }
 
 const buildInputDom = (attrs: {}, ...keys: string[]) => {
