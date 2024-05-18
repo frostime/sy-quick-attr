@@ -1,3 +1,9 @@
+## v1.2.0
+
+- 🐛 fix [#7](https://github.com/frostime/sy-quick-attr/issues/7)
+  - 去掉了基于 clearCb 的方案
+  - 改成基于 setTimeout 的方案，使用宏任务来解决问题
+
 ## v1.0.1
 
 🐛 修复忘了判断 clearCb 是否存在就调用导致的错误。

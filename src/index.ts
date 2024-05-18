@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-05-13 13:25:22
+ * @LastEditTime : 2024-05-18 15:09:37
  * @Description  : 
  */
 import {
@@ -108,9 +108,7 @@ const buildInputDom = (attrs: {}, keys: string[], keyInputType: Map<string, stri
  * @param clearCb 执行 protyle 清理的回调函数; 仅仅在使用 /slash 命令的情况下调用
  * @returns 
  */
-const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Function) => {
-    console.debug(`Add block attr: ${blockId}: ${JSON.stringify(template)}`);
-
+const addBlockAttr = async (blockId: BlockId, template: object) => {
     let blockAttrs = {};
     let userDefinedAttrs = new Set<string>();  //提示需要 @value 的属性
     let userDefinedAttrsInputType = new Map<string, string>(); //用户自定义属性的输入类型
@@ -139,7 +137,7 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
 
     //用户输入，覆盖默认属性
     if (userDefinedAttrs.size > 0) {
-        clearCb?.(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
+        // clearCb?.(); //以下会更改鼠标焦点，所以要在之前清理 Protyle 的 slash
         let attrs: {} | null = await new Promise((resolve) => {
             confirm(i18n.userDefineAttr, buildInputDom(existAttrs, Array.from(userDefinedAttrs), userDefinedAttrsInputType), (dialog: Dialog) => {
                 let inputs = dialog.element.querySelectorAll('.attr-value');
@@ -160,11 +158,10 @@ const addBlockAttr = async (blockId: BlockId, template: object, clearCb?: Functi
         }
         blockAttrs = { ...blockAttrs, ...attrs };
 
-    } else {
-        clearCb?.();
     }
 
     await setBlockAttrs(blockId, blockAttrs);
+    console.debug(`Add block attr: ${blockId}: ${JSON.stringify(blockAttrs)}`);
 }
 
 
@@ -247,12 +244,12 @@ export default class PluginQuickAttr extends Plugin {
                             showMessage(`Failed, can't find block`, 5000, 'error');
                             return;
                         }
-                        await addBlockAttr(blockId, template, () => {
-                            protyle.insert(window.Lute.Caret, false, false);
-                        });
-                    } else {
-                        protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
+                        //避免和 protyle slash 的事件冲突导致设置失效
+                        setTimeout(() => {
+                            addBlockAttr(blockId, template);
+                        }, 500);
                     }
+                    protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                 }
             });
         }
