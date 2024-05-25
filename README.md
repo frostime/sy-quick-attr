@@ -111,6 +111,29 @@ Example:
 So, when you enter `/todo` in the editor, the corresponding block will be quickly assigned the attribute `custom-todo-status=TODO`.
 
 
+### `@type/` Subcommands with `@slash`
+
+When an template marked with `@slash` is defined under `@type/`, the plugin will search upwards when setting the attribute to find the nearest container block that meets the `@type/` condition, and then add the attribute to this container block.
+
+For example:
+
+```json
+{
+  "@type/d": {
+    "Title": {
+      "@slash": "title",
+      "title": "Title"
+    }
+  }
+}
+```
+
+When you input `/title` in any paragraph block in the editor, it will search upwards to find the corresponding document block and then add the attribute `custom-title=Title` to the document block.
+
+> ⚠️ Note: This feature is only effective for container blocks.
+> For example, a heading block is not a container block, so the `@slash` command under `@type/h` may not add attributes to the nearest heading block as expected.
+
+
 ## Using the `@value` Feature
 
 When we set an attribute's value to `@value/xxx`, we can input the specified attribute's value in a pop-up dialog box.
