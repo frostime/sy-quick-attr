@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-05-18 15:09:37
+ * @LastEditTime : 2024-05-25 17:02:15
  * @Description  : 
  */
 import {
@@ -18,7 +18,7 @@ import "@/index.scss";
 
 import { setBlockAttrs, getBlockAttrs } from "./api";
 import Config from "./config.svelte";
-import { setI18n, Type2Name, QueryClosetElement, i18n } from "./libs/utils";
+import { setI18n, Type2Name, TTypeName, QueryClosetElement, i18n } from "./libs/utils";
 
 const ATTR_TEMPLATE = "attr-template";
 
@@ -214,7 +214,7 @@ export default class PluginQuickAttr extends Plugin {
         //check unique @slash key
         let slashKeys = new Set<string>();
 
-        const parseTemplateUnit = (key: string, template: Object, type: string = 'default') => {
+        const parseTemplateUnit = (key: string, template: Object, filterType: 'default' | TTypeName = 'default') => {
             if (template?.["@slash"] === undefined) {
                 return;
             }
@@ -236,18 +236,21 @@ export default class PluginQuickAttr extends Plugin {
                     }
                     let ele: HTMLElement = focusNode.nodeType === Node.TEXT_NODE ?
                         focusNode.parentElement : focusNode as HTMLElement;
-
-                    const Query = QueryClosetElement?.[type];
+                    let typeName = 'default';
+                    if (filterType !== 'default') {
+                        typeName = filterType === '@type/d' ? 'doctype' : 'nodetype';
+                    }
+                    const Query = QueryClosetElement?.[typeName];
                     if (Query) {
-                        const blockId = Query(ele);
+                        const blockId = Query(ele, filterType);
                         if (!blockId) {
                             showMessage(`Failed, can't find block`, 5000, 'error');
-                            return;
+                        } else {
+                            //避免和 protyle slash 的事件冲突导致设置失效
+                            setTimeout(() => {
+                                addBlockAttr(blockId, template);
+                            }, 500);
                         }
-                        //避免和 protyle slash 的事件冲突导致设置失效
-                        setTimeout(() => {
-                            addBlockAttr(blockId, template);
-                        }, 500);
                     }
                     protyle.insert(window.Lute.Caret, false, false); //插入特殊字符清除 slash
                 }
@@ -257,7 +260,12 @@ export default class PluginQuickAttr extends Plugin {
         for (const key in templates) {
             let template = templates[key];
             if (!key.startsWith('@type/')) {
-                parseTemplateUnit(key, template);
+                parseTemplateUnit(key, template, 'default');
+            } else {
+                for (const tkey in template) {
+                    let subTemplate = template[tkey];
+                    parseTemplateUnit(tkey, subTemplate, key as TTypeName);
+                }
             }
         }
         this.protyleSlash = slash;

@@ -1,3 +1,7 @@
+## v1.3.0
+
+- ✨ feat: 支持使用 @type/ 下的 @slash 命令
+
 ## v1.2.0
 
 - 🐛 fix [#7](https://github.com/frostime/sy-quick-attr/issues/7)
