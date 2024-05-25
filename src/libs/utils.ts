@@ -3,7 +3,7 @@
  * @Author       : frostime
  * @Date         : 2023-10-22 16:18:26
  * @FilePath     : /src/libs/utils.ts
- * @LastEditTime : 2024-04-16 14:45:01
+ * @LastEditTime : 2024-05-25 16:47:04
  * @Description  : 
  */
 import I18N from "@/i18n/zh_CN.json";
@@ -24,7 +24,9 @@ export const Name2Type = {
     "@type/c": "NodeCodeBlock",
     "@type/t": "NodeTable",
     "@type/s": "NodeSuperBlock"
-  };
+};
+
+export type TTypeName = keyof typeof Name2Type
 
 export const Type2Name = {
     "NodeDocument": "@type/d",
@@ -40,9 +42,12 @@ export const Type2Name = {
 
 
 type IQueryClosetElement = {
-    [key: string]: (element: HTMLElement) => BlockId | null;
+    [key: string]: (element: HTMLElement, args?: any) => BlockId | null;
 }
 
+/**
+ * 获取到输入元素最临近的复合匹配条件的 block node element
+ */
 export const QueryClosetElement: IQueryClosetElement = {
     default: (ele: HTMLElement): BlockId | null => {
         //获取最近的 data-node-id
@@ -60,5 +65,19 @@ export const QueryClosetElement: IQueryClosetElement = {
             }
         }
         return ele.getAttribute("data-node-id");
+    },
+    nodetype: (ele: HTMLElement, typeName: TTypeName): BlockId | null => {
+        let NodeType = Name2Type[typeName];
+        const selector = `[data-node-id][data-type="${NodeType}"]`;
+        ele = ele.closest(selector);
+        return ele?.getAttribute("data-node-id");
+    },
+    doctype: (ele: HTMLElement): BlockId | null => {
+        let protyle = ele.closest("div.protyle-content");
+        if (!protyle) {
+            return null;
+        }
+        let protyleTitle = protyle.querySelector("div.protyle-title");
+        return protyleTitle?.getAttribute("data-node-id");
     }
 };
