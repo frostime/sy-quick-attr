@@ -180,3 +180,35 @@ Example:
 
 ![](asset/value-select.png)
 
+
+## 📝 Note: Common JSON Format Errors
+
+When using JSON to configure rules, correct formatting is crucial. Here are some common JSON format errors and their respective solutions:
+
+#### 1. Use Correct Quotation Marks
+The JSON standard only accepts double quotation marks ("") to enclose keys (keys) and string values (string values). Using single quotation marks (''') or not using quotation marks at all will result in a parse error.
+
+Incorrect example:
+```json
+{ 'name': 'value' }
+```
+Correct example:
+```json
+{ "name": "value" }
+```
+
+#### 2. Do Not Add a Comma After the Last Key-Value Pair
+In JSON, there should not be a comma after the last element in a key-value pair list. Although some JavaScript engines can tolerate trailing commas, they are not part of the standard JSON.
+
+Incorrect example:
+```json
+{
+  "name": "value",
+}
+```
+Correct example:
+```json
+{
+  "name": "value"
+}
+```

@@ -1,5 +1,3 @@
-# d 
-
 快速添加块属性。
 
 ## 基本用法
@@ -19,7 +17,7 @@
   },
   "样例2": {
     "attr3": "value"
-  },
+  }
 }
 ```
 
@@ -70,7 +68,7 @@
   "@type/d": {
     "样例2": {
       "attr1": "value"
-    },
+    }
   }
 }
 ```
@@ -172,9 +170,45 @@
 ```json
 {
   "设置内联样式": {
-    "set-style": "@value/select:true;false",
+    "set-style": "@value/select:true;false"
   }
 }
 ```
 
 ![](asset/value-select.png)
+
+## 📝 注: JSON 常见格式错误
+
+
+在使用 JSON 配置规则时，正确的格式是关键。以下是一些常见的 JSON 格式错误和相应的解决方案：
+
+#### 1. 使用正确的引号
+JSON 标准只接受双引号 ("") 来包围键（keys）和字符串值（string values）。使用单引号（''）或不使用引号都会导致解析错误。
+
+错误示例:
+```json
+{ 'name': 'value' }
+```
+正确示例:
+```json
+{ "name": "value" }
+```
+
+#### 2. 不要在最后一个键值对后添加逗号
+在 JSON 中，键值对列表的最后一个元素后面不应该有逗号。尽管某些 JavaScript 引擎可以容忍尾随逗号，但它不是标准 JSON 的一部分。
+
+错误示例:
+```json
+{
+  "name": "value",
+}
+```
+正确示例:
+```json
+{
+  "name": "value"
+}
+```
+
+
+
