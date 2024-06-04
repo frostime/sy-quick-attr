@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-05-25 17:02:15
+ * @LastEditTime : 2024-06-04 11:25:31
  * @Description  : 
  */
 import {
@@ -66,7 +66,7 @@ const buildInputDom = (attrs: {}, keys: string[], keyInputType: Map<string, stri
         let inputType = keyInputType.get(key) ?? 'input';
         let ele: string;
         if (inputType === 'input') {
-            ele = `<input type="text attr-value" class="b3-text-field" data-key="${key}" value="${val}" style="flex: 1;"/>`;
+            ele = `<input type="text" class="b3-text-field attr-value" data-key="${key}" value="${val}" style="flex: 1;"/>`;
         } else if (inputType.startsWith('select')) {
             const pat = /select:(?:(.+)[,;]?)+/;
             const textlist = [];
