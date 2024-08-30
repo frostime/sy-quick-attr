@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-06-04 11:25:31
+ * @LastEditTime : 2024-08-30 20:39:59
  * @Description  : 
  */
 import {
@@ -195,7 +195,7 @@ export default class PluginQuickAttr extends Plugin {
     }
 
     async onunload() {
-        this.saveData(ATTR_TEMPLATE, this.templates);
+        // this.saveData(ATTR_TEMPLATE, this.templates);
         this.eventBus.off("click-blockicon", this.blockIconEventBindThis);
         this.eventBus.off("click-editortitleicon", this.docIconEventBindThis);
         //@ts-ignore

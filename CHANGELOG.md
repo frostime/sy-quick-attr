@@ -1,3 +1,7 @@
+## v1.4.0
+
+- 🐛 fix: No longer call `saveData` inside `onunload`
+
 ## v1.3.0
 
 - ✨ feat: 支持使用 @type/ 下的 @slash 命令
