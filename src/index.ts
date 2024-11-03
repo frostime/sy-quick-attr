@@ -3,7 +3,7 @@
  * @Author       : Yp Z
  * @Date         : 2023-09-21 21:42:01
  * @FilePath     : /src/index.ts
- * @LastEditTime : 2024-08-30 20:39:59
+ * @LastEditTime : 2024-11-03 14:27:34
  * @Description  : 
  */
 import {
@@ -12,7 +12,8 @@ import {
     Dialog,
     Protyle,
     showMessage,
-    confirm
+    confirm,
+    type IEventBusMap
 } from "siyuan";
 import "@/index.scss";
 
@@ -173,6 +174,7 @@ export default class PluginQuickAttr extends Plugin {
 
     private blockIconEventBindThis = this.blockIconEvent.bind(this);
     private docIconEventBindThis = this.docIconEvent.bind(this);
+    private treeItemEventBindThis = this.treeItemEvent.bind(this);
 
     private templates: { [key: string]: any } = {};
 
@@ -181,6 +183,7 @@ export default class PluginQuickAttr extends Plugin {
         setI18n(this.i18n);
         this.eventBus.on("click-blockicon", this.blockIconEventBindThis);
         this.eventBus.on("click-editortitleicon", this.docIconEventBindThis);
+        this.eventBus.on("open-menu-doctree", this.treeItemEventBindThis);
         //@ts-ignore
         // this.eventBus.on("add-block-attr", AddBlockAttrEvent);
     }
@@ -198,6 +201,7 @@ export default class PluginQuickAttr extends Plugin {
         // this.saveData(ATTR_TEMPLATE, this.templates);
         this.eventBus.off("click-blockicon", this.blockIconEventBindThis);
         this.eventBus.off("click-editortitleicon", this.docIconEventBindThis);
+        this.eventBus.off("open-menu-doctree", this.treeItemEventBindThis);
         //@ts-ignore
         // this.eventBus.off("add-block-attr", AddBlockAttrEvent);
     }
@@ -320,8 +324,27 @@ export default class PluginQuickAttr extends Plugin {
         return submenus;
     }
 
-    private createSpecificSubMenus(id: BlockId, dataType: string) {
+    /**
+     * 为特定类型的块创建子菜单
+     * @param id 
+     * @param dataType 
+     * @returns 
+     */
+    private createSpecificSubMenus(id: BlockId | BlockId[], dataType: string) {
         let submenus = [];
+
+        const clickCallback = async (template: Object) => {
+            if (Array.isArray(id)) {
+                let promises: Promise<any>[] = [];
+                id.forEach((id) => {
+                    promises.push(addBlockAttr(id, template));
+                });
+                await Promise.all(promises);
+            } else {
+                await addBlockAttr(id, template);
+            }
+        }
+
         for (const key in this.templates) {
             if (key.startsWith('@type/')) {
                 continue;
@@ -330,7 +353,7 @@ export default class PluginQuickAttr extends Plugin {
             submenus.push({
                 label: key,
                 click: async () => {
-                    await addBlockAttr(id, template);
+                    await clickCallback(template);
                 }
             });
         }
@@ -342,7 +365,7 @@ export default class PluginQuickAttr extends Plugin {
                 submenus.push({
                     label: key,
                     click: async () => {
-                        await addBlockAttr(id, template);
+                        await clickCallback(template);
                     }
                 });
             }
@@ -380,5 +403,22 @@ export default class PluginQuickAttr extends Plugin {
             label: this.i18n.addattr,
             submenu: submenus
         });
+    }
+
+    private treeItemEvent(e: CustomEvent<IEventBusMap["open-menu-doctree"]>) {
+        const { detail } = e;
+        if (detail.type === 'notebook') {
+            return;
+        }
+        if (detail.elements.length === 0) {
+            return;
+        }
+
+        let docs = Array.from(detail.elements).map((item: HTMLElement) => item.getAttribute('data-node-id'));
+        detail.menu.addItem({
+            icon: "iconForm",
+            label: this.i18n.addattr,
+            submenu: this.createSpecificSubMenus(docs, 'NodeDocument')
+        })
     }
 }
